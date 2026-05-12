@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unequal Ground: Power, Land, and Life in Early America</title>
+    <script src="https://cdn.plot.ly/plotly-2.26.0.min.js"></script>
+    <style>
+        :root {
+            --bg: #0e0e0e;
+            --surface: #181818;
+            --surface2: #222;
+            --text: #e2d8c8;
+            --muted: #9a9080;
+            --accent: #c27a3b;
+            --green: #6b9e70;
+            --red: #a83c3c;
+            --border: #2e2e2e;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: Georgia, serif;
+            line-height: 1.7;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(14,14,14,0.96);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+        }
+        .nav-inner {
+            max-width: 1100px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 54px; padding: 0 2rem;
+        }
+        .nav-brand {
+            font-size: 0.8rem; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--accent);
+        }
+        .nav-links { display: flex; gap: 1.4rem; list-style: none; }
+        .nav-links a {
+            color: var(--muted); text-decoration: none;
+            font-family: Arial, sans-serif; font-size: 0.75rem;
+            letter-spacing: 0.06em; text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--text); }
+
+        /* LAYOUT */
+        .section-wrap {
+            max-width: 1100px; margin: 0 auto; padding: 5rem 2rem;
+        }
+        .section-wrap + hr { border: none; border-top: 1px solid var(--border); }
+
+        /* HERO */
+        #hero { min-height: 90vh; display: flex; flex-direction: column; justify-content: center; padding-top: 7rem; }
+        .eyebrow {
+            font-family: Arial, sans-serif; font-size: 0.72rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 1.5rem;
+        }
+        h1 {
+            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            font-weight: normal; line-height: 1.05;
+            color: var(--text); margin-bottom: 1.5rem;
+        }
+        h1 em { font-style: normal; color: var(--accent); }
+        .hero-deck {
+            font-family: Arial, sans-serif; font-size: 1.1rem;
+            color: var(--muted); max-width: 600px;
+            line-height: 1.65; margin-bottom: 2.5rem;
+        }
+        .hero-meta {
+            font-family: Arial, sans-serif; font-size: 0.82rem;
+            color: var(--muted); max-width: 640px; line-height: 1.6;
+            border-top: 1px solid var(--border); padding-top: 1.5rem;
+        }
+
+        /* SECTION LABELS */
+        .sec-num {
+            font-family: Arial, sans-serif; font-size: 0.68rem;
+            letter-spacing: 0.2em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 0.75rem;
+        }
+        h2 {
+            font-size: clamp(1.8rem, 3.5vw, 3rem);
+            font-weight: normal; line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        p {
+            font-size: 1rem; margin-bottom: 1.2rem;
+            max-width: 700px;
+        }
+        p.sans {
+            font-family: Arial, sans-serif;
+            font-size: 0.93rem; color: var(--muted);
+        }
+
+        /* QUOTE */
+        .pull-quote {
+            background: #1c1408;
+            border-left: 3px solid var(--accent);
+            padding: 1.4rem 2rem;
+            margin: 2rem 0; max-width: 720px;
+        }
+        .pull-quote blockquote {
+            font-size: 1.05rem; line-height: 1.75;
+            font-style: italic; color: var(--text);
+            margin-bottom: 0.6rem;
+        }
+        .pull-quote cite {
+            font-family: Arial, sans-serif; font-size: 0.78rem;
+            color: var(--accent); font-style: normal;
+        }
+
+        /* TENSION GRID */
+        .tension-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.25rem; margin: 2rem 0; max-width: 880px;
+        }
+        .t-card {
+            padding: 1.4rem 1.6rem; border: 1px solid var(--border);
+        }
+        .t-card.promise { background: #0d180f; border-color: #3a5e3e; }
+        .t-card.reality { background: #180d0d; border-color: #5e2e2e; }
+        .t-card-label {
+            font-family: Arial, sans-serif; font-size: 0.68rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+        .t-card.promise .t-card-label { color: var(--green); }
+        .t-card.reality .t-card-label { color: var(--red); }
+        .t-card p {
+            font-family: Arial, sans-serif; font-size: 0.9rem;
+            color: var(--muted); margin-bottom: 0;
+        }
+
+        /* CHARTS */
+        .chart-wrap {
+            background: var(--surface); border: 1px solid var(--border);
+            padding: 1.25rem 1.5rem; margin: 2.5rem 0;
+        }
+        .chart-cap {
+            font-family: Arial, sans-serif; font-size: 0.8rem;
+            color: var(--muted); margin-top: 0.9rem;
+            max-width: 720px; line-height: 1.55;
+        }
+        .chart-cap strong { color: var(--text); }
+        .tag {
+            display: inline-block; font-size: 0.62rem;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            border: 1px solid var(--accent); color: var(--accent);
+            padding: 0.1rem 0.35rem; vertical-align: middle;
+        }
+        .tag.out { border-color: var(--border); color: var(--muted); }
+
+        /* STAT ROW */
+        .stat-row { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: 2rem 0; }
+        .stat {
+            background: var(--surface2); border: 1px solid var(--border);
+            padding: 1.1rem 1.4rem; min-width: 160px;
+        }
+        .stat-n { font-size: 2rem; color: var(--accent); line-height: 1; margin-bottom: 0.25rem; }
+        .stat-l {
+            font-family: Arial, sans-serif; font-size: 0.7rem;
+            text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+        }
+
+        /* TIMELINE */
+        .timeline { margin: 2.5rem 0; max-width: 780px; }
+        .tl-row {
+            display: grid; grid-template-columns: 80px 1fr;
+            gap: 1.25rem; padding: 1.1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .tl-row:last-child { border-bottom: none; }
+        .tl-year {
+            font-family: Arial, sans-serif; font-size: 0.88rem;
+            color: var(--accent); font-weight: bold; padding-top: 0.1rem;
+        }
+        .tl-body h4 {
+            font-family: Arial, sans-serif; font-size: 0.92rem;
+            font-weight: normal; color: var(--text); margin-bottom: 0.2rem;
+        }
+        .tl-body p {
+            font-family: Arial, sans-serif; font-size: 0.82rem;
+            color: var(--muted); margin-bottom: 0;
+        }
+
+        /* RESISTANCE CARDS */
+        .r-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 1.25rem; margin: 2rem 0; max-width: 880px;
+        }
+        .r-card {
+            background: #120e08; border: 1px solid #3d2e14;
+            padding: 1.4rem 1.6rem;
+        }
+        .r-card-label {
+            font-family: Arial, sans-serif; font-size: 0.68rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 0.75rem;
+        }
+        .r-card p {
+            font-family: Arial, sans-serif; font-size: 0.88rem;
+            color: var(--muted); margin-bottom: 0;
+        }
+
+        /* SOURCES */
+        .sources-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 2rem; margin-top: 2rem;
+        }
+        .sources-col h3 {
+            font-family: Arial, sans-serif; font-size: 0.68rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 1rem;
+        }
+        .sources-col ul { list-style: none; }
+        .sources-col li {
+            font-family: Arial, sans-serif; font-size: 0.82rem;
+            color: var(--muted); padding: 0.45rem 0;
+            border-bottom: 1px solid var(--border); line-height: 1.5;
+        }
+        .sources-col li:last-child { border-bottom: none; }
+
+        footer {
+            text-align: center; padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            font-family: Arial, sans-serif;
+            font-size: 0.78rem; color: var(--muted);
+        }
+
+        @media (max-width: 680px) {
+            .tension-grid, .r-grid, .sources-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <span class="nav-brand">Unequal Ground</span>
+        <ul class="nav-links">
+            <li><a href="#promise">The Promise</a></li>
+            <li><a href="#epidemic">Epidemic</a></li>
+            <li><a href="#enslaved">Enslaved</a></li>
+            <li><a href="#land">The Land</a></li>
+            <li><a href="#resistance">Resistance</a></li>
+            <li><a href="#sources">Sources</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="section-wrap" id="hero">
+    <p class="eyebrow">HIST 160 &nbsp;&middot;&nbsp; Knox College &nbsp;&middot;&nbsp; Unessay &nbsp;&middot;&nbsp; Spring 2026</p>
+    <h1>Unequal <em>Ground</em></h1>
+    <p class="hero-deck">Power, land, and life in early America. The ideals said all men are born free and equal. The data tells a different story.</p>
+    <p class="hero-meta">
+        This exhibit uses primary sources from HIST 160 alongside historical data to map the gap between the promise of freedom in early American political thought and the reality lived by Indigenous peoples and enslaved Africans. Each chart caption notes which sources are from the course and which are outside.
+    </p>
+</div>
+<hr>
+
+<!-- SECTION 1: THE PROMISE -->
+<div class="section-wrap" id="promise">
+    <p class="sec-num">01 &nbsp;&middot;&nbsp; The Promise</p>
+    <h2>All Men Are Born Free and Equal</h2>
+
+    <p>John Locke's <em>Second Treatise of Government</em> (1689) built the philosophical scaffolding that the American founders borrowed almost directly. In his framework, people begin in a "state of nature," all equal and independent, bound only by natural law. Government is legitimate only with the consent of the governed. No one can rightfully rule another without their agreement.</p>
+
+    <p>These weren't abstract ideas. Massachusetts put them into its 1780 Constitution. Jefferson distilled them into the Declaration. They were the official ideology of the new republic.</p>
+
+    <div class="pull-quote">
+        <blockquote>"Men being, as has been said, by nature, all free, equal, and independent, no one can be put out of this estate and subjected to the political power of another without his own consent."</blockquote>
+        <cite>John Locke, Second Treatise of Government (1689), Ch. 8, §95</cite>
+    </div>
+
+    <p>But Locke's "all men" was a narrow category in practice. His labor theory of property, the idea that land becomes yours when you mix your labor with it in the European agricultural sense, was used to deny Indigenous peoples title to their own territories. The logic: intensive European-style farming was "real" labor; Indigenous land use was not. Therefore the land was unowned. Therefore it could be taken.</p>
+
+    <p>The chart below shows how the 1790 census population broke down, and who among them held political rights.</p>
+
+    <div class="chart-wrap">
+        <div id="chart-rights" style="height:400px;"></div>
+        <p class="chart-cap">
+            <strong>1790 U.S. population by legal status, with political rights noted.</strong> 1790 and 1800 U.S. Census data; pre-census figures are historian estimates. Indigenous peoples living outside formal U.S. jurisdiction were not counted in the census at all. Voter eligibility varied by state property requirements. <span class="tag out">Outside &mdash; Census data</span>
+        </p>
+    </div>
+
+    <div class="tension-grid">
+        <div class="t-card promise">
+            <p class="t-card-label">The Promise</p>
+            <p>Locke: "all men are by nature free, equal, and independent." The Massachusetts Constitution (1780): "all men are born free and equal." The Declaration (1776): "all men are created equal."</p>
+        </div>
+        <div class="t-card reality">
+            <p class="t-card-label">The Reality</p>
+            <p>In 1790, 18% of people in the United States were legally owned as property. The majority of the rest were excluded from political participation by sex, race, or lack of property. The "all" in "all men" excluded most people.</p>
+        </div>
+    </div>
+</div>
+<hr>
+
+<!-- SECTION 2: EPIDEMIC -->
+<div class="section-wrap" id="epidemic">
+    <p class="sec-num">02 &nbsp;&middot;&nbsp; Epidemic</p>
+    <h2>The Great Rash</h2>
+
+    <p>Book XII of the Florentine Codex, compiled between 1540 and 1570 from Nahuatl testimony and translated by James Lockhart, describes the smallpox epidemic that swept through Tenochtitlan in 1520. The Nahuatl term was <em>hueyzahuatl</em>, the great rash. It arrived before Cortés launched his final military campaign. It killed tens of thousands, including the newly chosen tlatoani Cuitláhuac, who died within eighty days of taking office.</p>
+
+    <div class="pull-quote">
+        <blockquote>"There came among us a great sickness, a general plague... The pustules that covered people caused great desolation; a great many people died of it. They could no longer walk about, but lay in their dwellings and sleeping places, no longer able to move or stir."</blockquote>
+        <cite>Book XII of the Florentine Codex (compiled c. 1540&ndash;1570), trans. James Lockhart &mdash; adapted from course reading</cite>
+    </div>
+
+    <p>What the Codex makes clear is that the epidemic wasn't a side note to Spanish military conquest. It was intertwined with it. Disease arrived via Spanish contact and spread through a population with no prior immunity. It preceded the final siege. It shaped who survived to resist and who didn't.</p>
+
+    <p>This pattern repeated across the continent for two centuries. Epidemic contact preceded, accompanied, or followed European expansion everywhere it went. By the time many regions were formally "settled" by Europeans, the populations that had lived there for generations had already been decimated.</p>
+
+    <div class="chart-wrap">
+        <div id="chart-epidemic" style="height:460px;"></div>
+        <p class="chart-cap">
+            <strong>Key epidemic contact events across North America and Mesoamerica, 1500s&ndash;1700s.</strong> Dates are approximate. The Tenochtitlan epidemic of 1520 is documented directly in the course reading (Book XII, Florentine Codex). All other events are from outside historical sources. Bubble size is approximate relative severity. <span class="tag">Course Reading</span> <span class="tag out">Outside Sources</span>
+        </p>
+    </div>
+
+    <div class="timeline">
+        <div class="tl-row">
+            <div class="tl-year">1520</div>
+            <div class="tl-body">
+                <h4>Smallpox in Tenochtitlan <span class="tag">Florentine Codex</span></h4>
+                <p>The "great rash" devastates the city before Cortés's final assault. Cuitláhuac, who replaced Moteuczoma, dies within weeks. The epidemic is described in Nahuatl firsthand testimony in Book XII of the course reading.</p>
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-year">1616&ndash;19</div>
+            <div class="tl-body">
+                <h4>New England coastal epidemic <span class="tag out">Outside</span></h4>
+                <p>An epidemic kills an estimated 75&ndash;90% of coastal Wampanoag and neighboring peoples before the Mayflower arrives. English settlers described the cleared land as a providential gift.</p>
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-year">1617&ndash;19</div>
+            <div class="tl-body">
+                <h4>Epidemic in Powhatan territory <span class="tag out">Outside</span></h4>
+                <p>Disease weakened the Confederacy in the years just before English expansion from Jamestown. The Powhatan primary sources from Week 4 document the political landscape that emerged from this pressure.</p>
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-year">1630s&ndash;40s</div>
+            <div class="tl-body">
+                <h4>Epidemic among the Haudenosaunee (Iroquois) <span class="tag out">Outside</span></h4>
+                <p>Repeated smallpox outbreaks. Some nations lost over half their populations. This reshaped the balance of power in the Great Lakes region and intensified the Beaver Wars.</p>
+            </div>
+        </div>
+        <div class="tl-row">
+            <div class="tl-year">1738&ndash;39</div>
+            <div class="tl-body">
+                <h4>Smallpox among the Cherokee <span class="tag out">Outside</span></h4>
+                <p>Estimated to have killed half the Cherokee population. Epidemic and colonial expansion worked in tandem across the Southeast, as they had in Mexico two centuries earlier.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+
+<!-- SECTION 3: ENSLAVED -->
+<div class="section-wrap" id="enslaved">
+    <p class="sec-num">03 &nbsp;&middot;&nbsp; Enslaved</p>
+    <h2>The Numbers Behind the System</h2>
+
+    <p>By 1860 there were nearly four million enslaved people in the United States. That number didn't emerge from nowhere. It grew over two centuries, accelerating sharply in the 1800s even after the international slave trade was banned in 1808. Slavery was a system that reproduced itself.</p>
+
+    <div class="stat-row">
+        <div class="stat">
+            <div class="stat-n">1619</div>
+            <div class="stat-l">first enslaved Africans in English North America</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n">697K</div>
+            <div class="stat-l">enslaved people in the 1790 U.S. Census</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n">3.95M</div>
+            <div class="stat-l">enslaved people in the 1860 U.S. Census</div>
+        </div>
+        <div class="stat">
+            <div class="stat-n">3/5</div>
+            <div class="stat-l">of a person, for census apportionment (Three-Fifths Compromise)</div>
+        </div>
+    </div>
+
+    <div class="chart-wrap">
+        <div id="chart-enslaved" style="height:460px;"></div>
+        <p class="chart-cap">
+            <strong>Enslaved population in colonial and early America, 1650&ndash;1860.</strong> Pre-1790 figures are historian estimates based on ship manifests and colonial records; 1790&ndash;1860 are U.S. Census counts. Growth continues after 1808 import ban due to domestic enslavement. <span class="tag out">Outside &mdash; Census / historical estimates</span>
+        </p>
+    </div>
+
+    <p>The legal infrastructure that sustained this growth is documented in the course reading. The South Carolina Slave Code of 1740, passed one year after the Stono Rebellion (1739), systematized what had been accumulating over decades of colonial law. It made enslaved people chattel, personal property "to all intents, constructions, and purposes." It prohibited assembly, prohibited literacy, and gave enslavers near-total legal authority over the people they claimed to own.</p>
+
+    <div class="pull-quote">
+        <blockquote>"All negroes and Indians... mulattoes or mustizoes who are now or shall hereafter be in this Province, and all their issue and offspring... shall be and they are hereby declared to be, and remain forever hereafter, absolute slaves, and shall follow the condition of the mother."</blockquote>
+        <cite>South Carolina Slave Code of 1740 &mdash; course primary source</cite>
+    </div>
+
+    <p>The Stono Rebellion context matters. Enslaved people didn't passively accept enslavement. The Code was a legislative response to organized resistance. In 1739, enslaved people in South Carolina rose up, killed white colonists, and marched south toward Spanish Florida, where freedom had been promised to escaped slaves. The legislature doubled down precisely because the system was being challenged.</p>
+</div>
+<hr>
+
+<!-- SECTION 4: THE LAND -->
+<div class="section-wrap" id="land">
+    <p class="sec-num">04 &nbsp;&middot;&nbsp; The Land</p>
+    <h2>Census as Instrument of Extraction</h2>
+
+    <p>The Nahuatl Census from the Cuernavaca region, compiled around 1540 and translated by Lisa Sousa, is a colonial document in the most direct sense. It records calpulli (community) units household by household: who lived there, how much land they farmed (in irrigated versus hill plots, measured in brazas), whether residents were baptized, and what they owed.</p>
+
+    <p>The obligations flow to Martín Molotecatl teuctli, a local lord operating within the Spanish colonial system. The census doesn't exist to understand people. It exists to enumerate what can be extracted from them: labor, agricultural output, tribute. The act of counting is the act of claiming.</p>
+
+    <div class="pull-quote">
+        <blockquote>The census records each household's irrigated and hill maize fields, their composition, their baptismal status, and the tribute obligations owed to the local lord. Every brazas of land, every unbaptized resident is a data point in a system designed to measure what can be taken.</blockquote>
+        <cite>Nahuatl Census, Cuernavaca Region (c. 1540), trans. Lisa Sousa &mdash; paraphrase from course reading</cite>
+    </div>
+
+    <p>The same logic operated across the continent under different names. Land that Indigenous peoples had governed, farmed, hunted, and ceremonially maintained for generations was reclassified as empty or unowned under Locke's labor theory and European legal frameworks. Treaties formalized dispossession when they existed at all. The map below marks key locations where colonial-Indigenous contact, conflict, and conquest played out.</p>
+
+    <div class="chart-wrap">
+        <div id="chart-land" style="height:460px;"></div>
+        <p class="chart-cap">
+            <strong>Key colonial sites, treaty locations, and Indigenous territories in early America.</strong> Locations are approximate. Markers connect to course readings where noted; others draw on outside historical sources. Hover for details. <span class="tag">Course Readings</span> <span class="tag out">Outside Sources</span>
+        </p>
+    </div>
+
+    <p class="sans">Note what this map does not show: the vast majority of the continent's history before European contact. The markers represent moments of rupture, points where European colonial systems made contact with Indigenous governance and began displacing it. The space between the markers is not empty history.</p>
+</div>
+<hr>
+
+<!-- SECTION 5: RESISTANCE -->
+<div class="section-wrap" id="resistance">
+    <p class="sec-num">05 &nbsp;&middot;&nbsp; Resistance</p>
+    <h2>Who Pushed Back</h2>
+
+    <p>The systems documented in this exhibit were contested. Not everyone accepted them. The record of early America includes people who resisted, challenged, and refused.</p>
+
+    <div class="r-grid">
+        <div class="r-card">
+            <p class="r-card-label">Elizabeth Freeman, 1781 <span class="tag">Course Reading</span></p>
+            <p>Enslaved in Massachusetts, she heard the new state constitution read aloud: "all men are born free and equal." She hired a lawyer and sued for her freedom. The court found in her favor. She was among the first enslaved people to win freedom through legal argument under the republic's own founding documents.</p>
+        </div>
+        <div class="r-card">
+            <p class="r-card-label">Stono Rebellion, 1739 <span class="tag">Course Context</span></p>
+            <p>Enslaved people in South Carolina organized, rose up, and marched south toward Spanish Florida and freedom. The colonial legislature's direct response was the Slave Code of 1740. Resistance and repression shaped each other continuously.</p>
+        </div>
+    </div>
+
+    <div class="pull-quote">
+        <blockquote>"What, to the American slave, is your 4th of July? I answer: a day that reveals to him, more than all other days in the year, the gross injustice and cruelty to which he is the constant victim. To him, your celebration is a sham; your boasted liberty, an unholy license; your national greatness, swelling vanity."</blockquote>
+        <cite>Frederick Douglass, "What to the Slave is the Fourth of July?" Rochester, New York, July 5, 1852 &mdash; course reading</cite>
+    </div>
+
+    <p>Douglass delivered this in 1852, 76 years after the Declaration. He didn't argue the ideals were wrong. He argued the republic had failed to live up to them, that the contradiction between the promise and the reality was visible to anyone willing to look.</p>
+
+    <p>That's what this exhibit tries to do. Look at the contradiction directly. The ideals of early American political thought were real. So was the world built alongside them, on stolen land, with stolen labor, sustained by law and violence. Both things are true. That's the point.</p>
+</div>
+<hr>
+
+<!-- SOURCES -->
+<div class="section-wrap" id="sources">
+    <p class="sec-num">Sources</p>
+    <h2>Primary Sources and Readings</h2>
+
+    <div class="sources-grid">
+        <div class="sources-col">
+            <h3>Course Primary Sources</h3>
+            <ul>
+                <li>Nahuatl Census, Cuernavaca Region (c. 1540), trans. Lisa Sousa</li>
+                <li>Book XII of the Florentine Codex (1540&ndash;1570), trans. James Lockhart</li>
+                <li>John Locke, Second Treatise of Government (1689)</li>
+                <li>South Carolina Slave Code (1740)</li>
+                <li>Mum Bett / Elizabeth Freeman freedom suit (1781)</li>
+                <li>Frederick Douglass, "What to the Slave is the Fourth of July?" (1852)</li>
+                <li>Powhatan and Jamestown primary sources (Week 4)</li>
+                <li>Mary Rowlandson, Captivity Narrative; Carla Cevasco, secondary analysis</li>
+                <li>Unsettling America, Settler Colonialism Primer (framing reading)</li>
+                <li>Adams correspondence</li>
+            </ul>
+        </div>
+        <div class="sources-col">
+            <h3>Outside Data Sources</h3>
+            <ul>
+                <li>U.S. Census Bureau, historical census data, 1790&ndash;1860</li>
+                <li>Historian estimates of colonial-era enslaved populations, drawing on Trans-Atlantic Slave Trade Database methodology</li>
+                <li>Epidemic contact dates and mortality estimates from standard historical scholarship; these are estimates, not precise counts</li>
+                <li>Colonial site and treaty location coordinates are approximate</li>
+            </ul>
+            <h3 style="margin-top:1.5rem;">Method</h3>
+            <ul>
+                <li>Primary source analysis uses the SOCC method: Source, Observe, Contextualize, Corroborate</li>
+                <li>Chart captions tag whether content draws on course readings or outside data</li>
+                <li>Paraphrases of primary sources are marked as such; direct quotes are cited</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer>
+    Nima Sherpa &nbsp;&middot;&nbsp; HIST 160: Power and Inequity in America to 1865 &nbsp;&middot;&nbsp; Knox College &nbsp;&middot;&nbsp; Spring 2026
+</footer>
+
+<script>
+// Plotly default config
+const cfg = { responsive: true, displayModeBar: false };
+const dark = {
+    paper_bgcolor: '#181818',
+    plot_bgcolor: '#181818',
+    font: { color: '#e2d8c8', family: 'Arial, sans-serif' }
+};
+
+// ── CHART 1: Who had rights in 1790 ──────────────────────────────────────
+(function() {
+    const labels = [
+        'Enslaved people',
+        'Free Black people',
+        'White women',
+        'White men<br>(no property)',
+        'White men<br>(property owners)'
+    ];
+    const values = [697681, 59511, 1556647, 700000, 915000];
+    const colors = ['#8b1a1a', '#b04040', '#5a4820', '#4a5e30', '#2e5e35'];
+    const notes = [
+        'No rights — legally owned as chattel property',
+        'Severely restricted — few states permitted any participation',
+        'Excluded from political life — could not vote in most states',
+        'Partial rights — some states had limited property requirements',
+        'Full political rights — could vote, own property, hold office'
+    ];
+
+    Plotly.newPlot('chart-rights', [{
+        type: 'bar',
+        x: labels,
+        y: values,
+        marker: { color: colors, line: { color: '#111', width: 1 } },
+        customdata: notes,
+        hovertemplate: '<b>%{x}</b><br>~%{y:,} people<br><i>%{customdata}</i><extra></extra>',
+        text: values.map(v => (v >= 1000000 ? (v/1000000).toFixed(1) + 'M' : Math.round(v/1000) + 'K')),
+        textposition: 'outside',
+        textfont: { color: '#e2d8c8', size: 11 }
+    }], {
+        ...dark,
+        title: { text: 'Who Was Counted — and Who Had Rights — in 1790', font: { size: 13, color: '#e2d8c8' }, x: 0.02 },
+        xaxis: { gridcolor: '#2e2e2e', tickfont: { size: 11, color: '#9a9080' }, fixedrange: true },
+        yaxis: { gridcolor: '#2e2e2e', tickfont: { size: 11, color: '#9a9080' }, tickformat: ',', title: { text: 'People', font: { size: 11, color: '#9a9080' } }, fixedrange: true, range: [0, 1900000] },
+        margin: { l: 80, r: 20, t: 50, b: 110 },
+        annotations: [{
+            x: 'White men<br>(property owners)', y: 915000,
+            text: 'Voters', showarrow: true, arrowhead: 2,
+            arrowcolor: '#6b9e70', font: { color: '#6b9e70', size: 11 },
+            ax: 50, ay: -45
+        }]
+    }, cfg);
+})();
+
+// ── CHART 2: Epidemic map ─────────────────────────────────────────────────
+(function() {
+    const pts = [
+        { lat: 19.43, lon: -99.13, sz: 30, col: '#c27a3b', primary: true,
+          txt: '<b>Tenochtitlan, 1520</b><br>Smallpox (hueyzahuatl) sweeps the city<br>before the final Spanish assault.<br>"The pustules covered people..."<br><i>Source: Florentine Codex, Book XII</i>' },
+        { lat: 18.92, lon: -99.23, sz: 16, col: '#c27a3b', primary: true,
+          txt: '<b>Cuernavaca region, c. 1540</b><br>Nahuatl Census documents tribute<br>extraction in the aftermath of conquest.<br><i>Source: Nahuatl Census (course reading)</i>' },
+        { lat: 41.9,  lon: -70.5,  sz: 24, col: '#a83c3c', primary: false,
+          txt: '<b>New England coast, 1616&ndash;1619</b><br>Epidemic kills ~75&ndash;90% of coastal peoples<br>before Mayflower arrival.' },
+        { lat: 37.2,  lon: -76.8,  sz: 20, col: '#a83c3c', primary: false,
+          txt: '<b>Powhatan territory, 1617&ndash;1619</b><br>Epidemic weakens the Confederacy.<br>Context for Jamestown primary sources<br>assigned Week 4.' },
+        { lat: 32.8,  lon: -79.9,  sz: 16, col: '#a83c3c', primary: false,
+          txt: '<b>South Carolina, 1520s</b><br>Early epidemic contact via<br>Spanish coastal expeditions.' },
+        { lat: 43.5,  lon: -76.2,  sz: 22, col: '#a83c3c', primary: false,
+          txt: '<b>Haudenosaunee homelands, 1630s&ndash;40s</b><br>Repeated smallpox outbreaks.<br>Some nations lose over half their populations.' },
+        { lat: 35.5,  lon: -83.5,  sz: 20, col: '#a83c3c', primary: false,
+          txt: '<b>Cherokee territory, 1738&ndash;1739</b><br>Smallpox kills an estimated<br>half the Cherokee population.' },
+    ];
+
+    Plotly.newPlot('chart-epidemic', [{
+        type: 'scattergeo', mode: 'markers',
+        lat: pts.map(p => p.lat), lon: pts.map(p => p.lon),
+        text: pts.map(p => p.txt), hoverinfo: 'text',
+        marker: {
+            size: pts.map(p => p.sz),
+            color: pts.map(p => p.col),
+            opacity: 0.88,
+            line: { color: '#e2d8c8', width: pts.map(p => p.primary ? 2 : 1) }
+        }
+    }], {
+        paper_bgcolor: '#181818',
+        font: { color: '#e2d8c8', family: 'Arial, sans-serif' },
+        title: { text: 'Epidemic Contact Points in Colonial North America', font: { size: 13, color: '#e2d8c8' }, x: 0.02 },
+        geo: {
+            scope: 'north america', bgcolor: '#181818',
+            landcolor: '#252525', oceancolor: '#141414',
+            lakecolor: '#141414', subunitcolor: '#383838', countrycolor: '#383838',
+            showland: true, showocean: true, showlakes: true,
+            showsubunits: true, showcountries: true, resolution: 50,
+            lonaxis: { range: [-140, -50] }, lataxis: { range: [12, 62] }
+        },
+        margin: { l: 0, r: 0, t: 50, b: 10 }
+    }, cfg);
+})();
+
+// ── CHART 3: Enslaved population 1650–1860 ────────────────────────────────
+(function() {
+    const yrs  = [1650,1660,1670,1680,1690,1700,1710,1720,1730,1740,1750,1760,1770,1780,1790,1800,1810,1820,1830,1840,1850,1860];
+    const pop  = [1700,2700,5000,7000,13000,28000,44000,68000,91000,150000,236000,325000,460000,575000,697681,893602,1191362,1538022,2009043,2487355,3204313,3953760];
+    const census = yrs.map(y => y >= 1790);
+
+    Plotly.newPlot('chart-enslaved', [
+        {   // estimates
+            type: 'scatter', mode: 'lines+markers', name: 'Historian estimate',
+            x: yrs.filter((_,i) => !census[i]), y: pop.filter((_,i) => !census[i]),
+            line: { color: '#8b1a1a', width: 2, dash: 'dot' },
+            marker: { size: 5, color: '#8b1a1a' },
+            hovertemplate: '%{x}: ~%{y:,} (estimate)<extra></extra>'
+        },
+        {   // census
+            type: 'scatter', mode: 'lines+markers', name: 'U.S. Census',
+            x: yrs.filter((_,i) => census[i]), y: pop.filter((_,i) => census[i]),
+            line: { color: '#c27a3b', width: 2.5 },
+            marker: { size: 7, color: '#c27a3b' },
+            hovertemplate: '%{x}: %{y:,} (Census)<extra></extra>'
+        }
+    ], {
+        ...dark,
+        title: { text: 'Enslaved Population in Colonial and Early America, 1650&ndash;1860', font: { size: 13, color: '#e2d8c8' }, x: 0.02 },
+        xaxis: { gridcolor: '#2e2e2e', tickfont: { size: 11, color: '#9a9080' }, dtick: 20, fixedrange: true },
+        yaxis: { gridcolor: '#2e2e2e', tickfont: { size: 11, color: '#9a9080' }, tickformat: ',', title: { text: 'Enslaved people', font: { size: 11, color: '#9a9080' } }, fixedrange: true },
+        legend: { bgcolor: 'rgba(0,0,0,0)', font: { color: '#9a9080', size: 10 }, x: 0.02, y: 0.97 },
+        shapes: [
+            { type: 'line', x0: 1808, x1: 1808, y0: 0, y1: 4200000,
+              line: { color: '#444', width: 1, dash: 'dash' } }
+        ],
+        annotations: [
+            { x: 1619, y: 5000, text: '1619', showarrow: true, arrowhead: 2,
+              arrowcolor: '#555', font: { color: '#9a9080', size: 9.5 },
+              ax: 30, ay: -50, bgcolor: 'rgba(24,24,24,0.85)', borderpad: 3 },
+            { x: 1740, y: 150000, text: '1740 SC Slave Code', showarrow: true, arrowhead: 2,
+              arrowcolor: '#555', font: { color: '#c27a3b', size: 9.5 },
+              ax: 55, ay: -45, bgcolor: 'rgba(24,24,24,0.85)', borderpad: 3 },
+            { x: 1808, y: 1600000, text: '1808: import ban', showarrow: false,
+              font: { color: '#9a9080', size: 9 },
+              ax: 0, ay: 0, bgcolor: 'rgba(24,24,24,0.85)', borderpad: 3,
+              xanchor: 'left', x: 1810, y: 1700000, xref: 'x', yref: 'y' },
+            { x: 1860, y: 3953760, text: '1860: ~4 million', showarrow: true, arrowhead: 2,
+              arrowcolor: '#555', font: { color: '#c27a3b', size: 9.5 },
+              ax: -70, ay: -35, bgcolor: 'rgba(24,24,24,0.85)', borderpad: 3 },
+        ],
+        margin: { l: 90, r: 30, t: 50, b: 50 }
+    }, cfg);
+})();
+
+// ── CHART 4: Key sites map ────────────────────────────────────────────────
+(function() {
+    const sites = [
+        { lat: 19.43, lon: -99.13, type: 'Mesoamerica', sz: 18,
+          txt: '<b>Tenochtitlan</b><br>Center of the Nahua world. Conquered 1521.<br>Nahuatl Census (~1540) documents tribute<br>extraction in the post-conquest system.<br><i>Course reading: Nahuatl Census</i>' },
+        { lat: 18.92, lon: -99.23, type: 'Mesoamerica', sz: 14,
+          txt: '<b>Cuernavaca region</b><br>Location of the Nahuatl Census calpullis.<br>Households recorded with land measurements<br>and tribute obligations to the colonial lord.' },
+        { lat: 37.21, lon: -76.78, type: 'Colonial', sz: 15,
+          txt: '<b>Jamestown / Powhatan Confederacy</b><br>First permanent English settlement (1607).<br>Powhatan primary sources (Week 4) document<br>contact and early conflict.' },
+        { lat: 41.96, lon: -70.67, type: 'Colonial', sz: 15,
+          txt: '<b>Plymouth / Wampanoag</b><br>English settlement on land cleared by epidemic.<br>Mary Rowlandson captivity narrative (1682)<br>documents later King Philip\'s War conflict.' },
+        { lat: 32.78, lon: -79.94, type: 'Slavery', sz: 17,
+          txt: '<b>South Carolina</b><br>Site of Stono Rebellion (1739).<br>SC Slave Code (1740) followed directly<br>as legislative response to resistance.<br><i>Course reading: SC Slave Code</i>' },
+        { lat: 42.36, lon: -71.06, type: 'Resistance', sz: 15,
+          txt: '<b>Massachusetts</b><br>Elizabeth Freeman sues for freedom (1781)<br>under the state constitution\'s declaration<br>that "all men are born free and equal."<br><i>Course reading: Freeman case</i>' },
+        { lat: 43.05, lon: -76.15, type: 'Indigenous', sz: 16,
+          txt: '<b>Haudenosaunee homelands (Iroquois)</b><br>Confederacy of six nations. Struck by<br>repeated epidemics and colonial pressure<br>through the 17th&ndash;18th centuries.' },
+        { lat: 35.50, lon: -83.50, type: 'Indigenous', sz: 15,
+          txt: '<b>Cherokee territory</b><br>One of the largest Indigenous nations<br>in the Southeast. Smallpox kills ~half<br>the population in 1738&ndash;39.' },
+        { lat: 39.95, lon: -75.17, type: 'Political', sz: 14,
+          txt: '<b>Philadelphia</b><br>Constitutional Convention (1787).<br>The Three-Fifths Compromise counted<br>enslaved people as 3/5 of a person<br>for congressional apportionment.' },
+    ];
+
+    const colors = {
+        Mesoamerica: '#c27a3b', Colonial: '#5a7a9e',
+        Slavery: '#8b1a1a', Resistance: '#6b9e70',
+        Indigenous: '#8a7050', Political: '#7a7a9e'
+    };
+
+    const traces = [...new Set(sites.map(s => s.type))].map(t => ({
+        type: 'scattergeo', mode: 'markers', name: t,
+        lat: sites.filter(s => s.type === t).map(s => s.lat),
+        lon: sites.filter(s => s.type === t).map(s => s.lon),
+        text: sites.filter(s => s.type === t).map(s => s.txt),
+        hoverinfo: 'text',
+        marker: {
+            size: sites.filter(s => s.type === t).map(s => s.sz),
+            color: colors[t], opacity: 0.88,
+            line: { color: '#e2d8c8', width: 1 }
+        }
+    }));
+
+    Plotly.newPlot('chart-land', traces, {
+        paper_bgcolor: '#181818',
+        font: { color: '#e2d8c8', family: 'Arial, sans-serif' },
+        title: { text: 'Key Sites: Colonialism, Slavery, and Resistance in Early America', font: { size: 13, color: '#e2d8c8' }, x: 0.02 },
+        geo: {
+            scope: 'north america', bgcolor: '#181818',
+            landcolor: '#252525', oceancolor: '#141414',
+            lakecolor: '#141414', subunitcolor: '#383838', countrycolor: '#383838',
+            showland: true, showocean: true, showlakes: true,
+            showsubunits: true, showcountries: true, resolution: 50,
+            lonaxis: { range: [-125, -62] }, lataxis: { range: [14, 52] }
+        },
+        legend: {
+            bgcolor: 'rgba(20,20,20,0.9)', font: { color: '#9a9080', size: 10 },
+            bordercolor: '#2e2e2e', borderwidth: 1, x: 0.02, y: 0.98
+        },
+        margin: { l: 0, r: 0, t: 50, b: 10 }
+    }, cfg);
+})();
+</script>
+</body>
+</html>
