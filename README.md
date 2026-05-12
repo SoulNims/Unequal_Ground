@@ -1,7 +1,5 @@
 # HIST 160 Unessay: Power and Inequity in Early America
 
-**Nima Sherpa | Knox College | Spring 2026**
-**Due: May 21, 2026**
 
 ## What This Is
 
